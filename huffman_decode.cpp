@@ -4,7 +4,7 @@
 #include <vector>
 #include <queue>
 #include <string>
-#include <math.h> 
+#include <math.h>
 #include "bitstream.hpp"
 
 using namespace std;
@@ -25,24 +25,29 @@ char bit_set2char(bitset<8> in)
     auto y = bitset<8>(str);
     return (char)y.to_ulong();
 }
- 
-int main()
+
+int main(int argc, char* argv[])
 {
+
+    if(argc > 3)
+    {
+        cout << "somente dois argumentos (nome do arquivo a ser decodificado e nome do arquivo decodificado)" << endl;
+        return 1;
+    }
+
     /* a priority queue normalmente ordena de maior para menor, com o pq_compare ela faz o contrario*/
     priority_queue< Node* ,vector< Node* >,pq_compare> tabela_huffman;
-    
-
     map<char,long int> count;
 
     ifstream input;
-    
-    input.open("out.txt",ios::binary);
+
+    input.open(argv[1],ios::binary);
     if (!input)
     {
         cerr << "error: deu ruim\n";
         return -1;
     }
-    
+
     long int num_pair;
     input.read(reinterpret_cast<char*>(&num_pair), sizeof(long int));
     bitset<8*sizeof(long int)> d(num_pair);
@@ -68,13 +73,15 @@ int main()
 
     create_queue(count,tabela_huffman);
 
-    /*Combinar dois menores e criar arvore binaria*/ 
+    /*Combinar dois menores e criar arvore binaria*/
     create_bin_tree(tabela_huffman);
     //printBT(tabela_huffman.top());
 
+
+
     ofstream decoded;
-    
-    decoded.open("decoded.txt");
+
+    decoded.open(argv[2]);
 
     Bit_reader instream (input);
     Bit_writer ostream (decoded);
@@ -84,18 +91,13 @@ int main()
     bool out;
     auto root = tabela_huffman.top();
     auto next = root;
+
     while(lidos < total)
     {
-        if (pos == 8)
-        {
-            pos = 0;
-        }
-        out = instream.find_bit(pos);
-        pos ++;
-        
+        out = instream.find_bit();
         next = ostream.write_decode(out, next, root, lidos);
     }
 
-    input.close();
-
+    return 0;
 }
+

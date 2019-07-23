@@ -8,19 +8,25 @@
 #include "huffman_table.hpp"
 
 using namespace std;
- 
-int main()
+
+int main(int argc, char* argv[])
 {
+
+    if(argc > 3)
+    {
+        cout << "somente dois argumentos (nome do arquivo a ser codificado e nome do arquivo codificado)" << endl;
+        return 1;
+    }
     /* a priority queue normalmente ordena de maior para menor, com o pq_compare ela faz o contrario*/
     priority_queue< Node* ,vector< Node* >,pq_compare> tabela_huffman;
-    
+
 
     map<char,long int> count;
     map<char,vector <bool> > codigo ;
 
     ifstream input;
-    
-    input.open("biblia.txt");
+
+    input.open(argv[1]);
     if (!input)
     {
         cerr << "error: deu ruim\n";
@@ -34,18 +40,18 @@ int main()
 
     create_queue(count,tabela_huffman);
 
-    /*Combinar dois menores e criar arvore binaria*/ 
+    /*Combinar dois menores e criar arvore binaria*/
     create_bin_tree(tabela_huffman);
-    
+
     /*Create Code*/
     Postorder(tabela_huffman.top(),codigo);
 
     //printBT(tabela_huffman.top());
 
     tabela_huffman.pop();
-   
+
     ofstream ofile;
-    ofile.open("out.txt");
+    ofile.open(argv[2]);
     Bit_writer outstream (ofile);
 
     if (!ofile)
@@ -67,8 +73,6 @@ int main()
             outstream.fill_buffer(i);
         }
     }
-
-    input.close();
-    ofile.close();
-
+    outstream.dump_buffer();
+    return 0;
 }

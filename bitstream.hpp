@@ -16,31 +16,28 @@ class Bit_writer
 
 	public:
 	Bit_writer(std::ostream& os_) : os(os_){};
-    ~Bit_writer() 
-	{ 
-		if(pos!= 0)
-		{
-			os.put(buffer);
-		} 
-	}
 
 	void fill_buffer(bool bit)
 	{
 		if(pos == 8)
 		{
-			std::bitset<8> data(buffer);
-			os.put(buffer);
+			os.write(&buffer,1);
 			buffer = 0;
 			pos = 0;
 		}
 		if(bit)
 		{
 			buffer |= 1 << pos;
-			pos++;
 		}
-		else{
-			pos++;
-		}
+		pos++;
+
+	}
+
+	void dump_buffer()
+	{
+		os.write(&buffer,1);
+		buffer = 0;
+		pos = 0;
 	}
 
 	void write_map(std::map<char,long int> count)
@@ -81,7 +78,7 @@ class Bit_writer
 			}
 			else
 			{
-				os.put(next->left->caracter);
+				os.write(&next->left->caracter,1);
 				lidos ++;
 				return(root);
 			}
@@ -94,12 +91,12 @@ class Bit_writer
 			}
 			else
 			{
-				os.put(next->right->caracter);
+				os.write(&next->right->caracter,1);
 				lidos ++;
 				return(root);
 			}
 		}
-		
+
 
 	}
 
@@ -110,17 +107,22 @@ class Bit_reader
 	private:
 
 	char buffer = 0;
+	int pos = 0;
 	std::ifstream& is;
 
 	public:
 	Bit_reader(std::ifstream& is_) : is(is_){};
 
-	bool find_bit(int pos)
-	{ 
+	bool find_bit()
+	{
 		if(pos== 0)
 		{
-			is.get(buffer);
-		} 
-		return (buffer & 1 << pos);
+			is.read(&buffer, sizeof(char));
+		}
+		bool res = buffer & 1 << pos;
+
+		pos = (pos + 1) % 8;
+
+		return (res);
 	}
 };
