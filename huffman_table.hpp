@@ -12,7 +12,7 @@ class Node{
     char caracter;
     long int freq;
     Node *left, *right;
-    std::vector <bool> codigo; 
+    std::vector <bool> codigo;
 
     Node(char a,long int b){
        caracter = a;
@@ -69,10 +69,10 @@ void create_bin_tree(std::priority_queue< Node* ,std::vector< Node* >,pq_compare
             queue.push(interno);
 	}
 }
-void Postorder(Node* node,std::map<char,std::vector <bool> >& code) 
-{ 
-    if (node == nullptr) 
-        return; 
+void code_from_tree(Node* node,std::map<char,std::vector <bool> >& code)
+{
+    if (node == nullptr)
+        return;
     if(node->left != nullptr)
     {
         node->left->codigo = node->codigo;
@@ -83,8 +83,8 @@ void Postorder(Node* node,std::map<char,std::vector <bool> >& code)
         node->right->codigo = node->codigo;
         node->right->codigo.push_back(true);
     }
-    Postorder(node->left,code);
-    Postorder(node->right,code); 
+    code_from_tree(node->left,code);
+    code_from_tree(node->right,code);
 
     if(node->caracter != '_')
     {
@@ -92,7 +92,16 @@ void Postorder(Node* node,std::map<char,std::vector <bool> >& code)
     }
 }
 
-void printBT(const std::string & prefix, const Node* node, bool isLeft)
+void delete_tree(Node* node)
+{
+    if (node == NULL) return;
+    delete_tree(node->left);
+    delete_tree(node->right);
+
+    free(node);
+}
+
+void print_tree(const std::string & prefix, const Node* node, bool isLeft)
     {
         if( node != nullptr )
         {
@@ -109,15 +118,15 @@ void printBT(const std::string & prefix, const Node* node, bool isLeft)
             {
                 std::cout << "  " << std::endl;
             }
-            
+
 
             // enter the next tree level - left and right branch
-            printBT( prefix + (isLeft ? "│   " : "    "), node->left, true);
-            printBT( prefix + (isLeft ? "│   " : "    "), node->right, false);
+            print_tree( prefix + (isLeft ? "│   " : "    "), node->left, true);
+            print_tree( prefix + (isLeft ? "│   " : "    "), node->right, false);
         }
     }
 
-void printBT(const Node* node)
+void print_tree(const Node* node)
 {
-    printBT("", node, false);    
+    print_tree("", node, false);
 }

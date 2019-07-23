@@ -21,9 +21,7 @@ class Bit_writer
 	{
 		if(pos == 8)
 		{
-			os.write(&buffer,1);
-			buffer = 0;
-			pos = 0;
+			dump_buffer();
 		}
 		if(bit)
 		{
@@ -45,25 +43,25 @@ class Bit_writer
 		bool j = false;
 		long int size = count.size();
 
-		std::bitset<8*sizeof(long int)> b(size);
+		std::bitset<8*sizeof(long int)> num_pair(size);
 
-		for (int i = 8*sizeof(long int);i>0;i--)
+		for (int i = 0;i<8*sizeof(long int);i++)
 		{
-			fill_buffer(b[i-1]);
+			fill_buffer(num_pair[i]);
 		}
 
 		for (auto caracter: count)
 		{
-			std::bitset<8> c(caracter.first);
-			std::bitset<8*sizeof(long int)> d(caracter.second);
+			std::bitset<8> car(caracter.first);
+			std::bitset<8*sizeof(long int)> freq(caracter.second);
 
-			for (int i = 8;i>0;i--)
+			for (int i = 0;i<8;i++)
 			{
-				fill_buffer(c[i-1]);
+				fill_buffer(car[i]);
 			}
-			for (int i = 8*sizeof(long int);i>0;i--)
+			for (int i = 0;i<8*sizeof(long int);i++)
 			{
-				fill_buffer(d[i-1]);
+				fill_buffer(freq[i]);
 			}
 		}
 	}
@@ -113,7 +111,7 @@ class Bit_reader
 	public:
 	Bit_reader(std::ifstream& is_) : is(is_){};
 
-	bool find_bit()
+	bool get_bit()
 	{
 		if(pos== 0)
 		{

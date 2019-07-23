@@ -12,18 +12,15 @@ using namespace std;
 int main(int argc, char* argv[])
 {
 
-    if(argc > 3)
+    if(argc > 4)
     {
-        cout << "somente dois argumentos (nome do arquivo a ser codificado e nome do arquivo codificado)" << endl;
+        cout << "(nome do arquivo a ser codificado, nome do arquivo codificado, printar arvore binaria (opcional)" << endl;
         return 1;
     }
     /* a priority queue normalmente ordena de maior para menor, com o pq_compare ela faz o contrario*/
     priority_queue< Node* ,vector< Node* >,pq_compare> tabela_huffman;
-
-
     map<char,long int> count;
     map<char,vector <bool> > codigo ;
-
     ifstream input;
 
     input.open(argv[1]);
@@ -44,16 +41,20 @@ int main(int argc, char* argv[])
     create_bin_tree(tabela_huffman);
 
     /*Create Code*/
-    Postorder(tabela_huffman.top(),codigo);
+    code_from_tree(tabela_huffman.top(),codigo);
 
-    //printBT(tabela_huffman.top());
+    if(argv[3])
+    {
+        print_tree(tabela_huffman.top());
+    }
 
-    tabela_huffman.pop();
+    //Remove Bin Tree
+    delete_tree(tabela_huffman.top());
 
     ofstream ofile;
-    ofile.open(argv[2]);
     Bit_writer outstream (ofile);
 
+    ofile.open(argv[2]);
     if (!ofile)
     {
         cerr << "error: deu ruim\n";
